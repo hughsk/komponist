@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Komponist by hughsk</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Komponist</h1>
+        <p>A simple, yet flexible, Node client library for MPD, the hackable headless audio playback server.</p>
+
+        <p class="view"><a href="https://github.com/hughsk/komponist">View the Project on GitHub <small>hughsk/komponist</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/hughsk/komponist/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/hughsk/komponist/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/hughsk/komponist">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>komponist</h1>
+
+<p>A simple, yet flexible, Node client library for <a href="http://mpd.wikia.com/">MPD</a>,
+the hackable headless audio playback server.</p>
+
+<h2>Installation</h2>
+
+<div class="highlight"><pre>npm install komponist
+</pre></div>
+
+<p>Of course, before you go ahead and write any code - make sure you
+<a href="http://mpd.wikia.com/wiki/Install">install MPD</a> and start it up wherever you
+want to play your music from. You should probably get MPC (the simple CLI client)
+too.</p>
+
+<h2>Basic Usage</h2>
+
+<p>With a small number of exceptions, komponist exposes all of the available
+commands as callback-style methods. For a full list
+<a href="http://www.musicpd.org/doc/protocol/">check out the docs</a>.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">'~/iTunes'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">play</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">client</span><span class="p">.</span><span class="nx">currentsong</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">info</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">info</span><span class="p">.</span><span class="nx">Artist</span><span class="p">);</span> <span class="c1">// Ennio Morricone</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">info</span><span class="p">.</span><span class="nx">Title</span><span class="p">);</span>  <span class="c1">// Il Buono, Il Cattivo, Il Brutto</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">info</span><span class="p">.</span><span class="nx">Album</span><span class="p">);</span>  <span class="c1">// The Good, The Bad, And The Ugly</span>
+      <span class="p">});</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you prefer to just fire and forget, you can omit the callbacks.</p>
+
+<div class="highlight"><pre><span class="c1">// You can always omit the port/host if you're running</span>
+<span class="c1">// MPD locally and with the default settings.</span>
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">'~/iTunes'</span><span class="p">);</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>There's also a general purpose <code>command</code> method:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// Jump 60 seconds into the 5th track in your playlist:</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">'seek'</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// And stop playing when it's done.</span>
+    <span class="nx">client</span><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">'single'</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>The client returned by <code>komponist.connect</code> is just an extended TCP stream, so if you
+like you can just pipe data around the Node way:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">()</span>
+
+<span class="c1">// Pipe a list of commands to MPD from</span>
+<span class="c1">// a file, piping the raw response out to</span>
+<span class="c1">// stdout! (For kicks)</span>
+<span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="s1">'./commands.mpd'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">client</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">stdout</span><span class="p">)</span>
+</pre></div>
+
+<h2>Watching for Changes</h2>
+
+<p>If you're building an interface-driven client for MPD, you're going to want to
+be able to listen for changes as they happen. This is all taken care of for you:
+just listen for the "changed" event for MPD updates.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">)</span>
+
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">)</span>
+   <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'changed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">system</span><span class="p">)</span> <span class="p">{</span>
+     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Subsystem changed: '</span> <span class="o">+</span> <span class="nx">system</span><span class="p">);</span>
+   <span class="p">});</span>
+</pre></div>
+
+<p>According to the MPD protocol documentation, you can track changes to the
+following systems this way:</p>
+
+<ul>
+<li>
+<code>update</code>: a database update has started or finished.</li>
+<li>
+<code>database</code>: the song database has been modified after <code>update</code>.</li>
+<li>
+<code>stored_playlist</code>: a stored playlist has been modified.</li>
+<li>
+<code>playlist</code>: the current playlist has been modified.</li>
+<li>
+<code>player</code>: the player has been started, stopped or seeked.</li>
+<li>
+<code>mixer</code>: the volume has been changed.</li>
+<li>
+<code>output</code>: an audio output has been enabled or disabled.</li>
+<li>
+<code>options</code>: options like repeat, random, crossfade, replay gain.</li>
+<li>
+<code>sticker</code>: the sticker database has been modified.</li>
+<li>
+<code>subscription</code>: a client has subscribed or unsubscribed to a channel.</li>
+</ul><h2>Publish/Subscribe</h2>
+
+<p>MPD has simple publish/subscribe support for communicating across multiple
+clients. Using the <code>publish</code> and <code>subscribe</code> methods, you can send messages
+to other subscribers across the network, e.g. for simple service discovery.</p>
+
+<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">subscriber</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">subscriber</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">);</span>
+  <span class="nx">subscriber</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'world'</span><span class="p">);</span>
+
+  <span class="nx">subscriber</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'message'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">message</span><span class="p">,</span> <span class="nx">channel</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Got message "'</span> <span class="o">+</span> <span class="nx">message</span> <span class="o">+</span> <span class="s1">'" on channel "'</span> <span class="o">+</span> <span class="nx">channel</span> <span class="o">+</span> <span class="s1">'"'</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">publisher</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">publisher</span><span class="p">.</span><span class="nx">publish</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'message #1'</span><span class="p">);</span>
+    <span class="nx">publisher</span><span class="p">.</span><span class="nx">publish</span><span class="p">(</span><span class="s1">'world'</span><span class="p">,</span> <span class="s1">'message #2'</span><span class="p">);</span>
+  <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// Output:</span>
+<span class="c1">// Got message "message #1" on channel "hello"</span>
+<span class="c1">// Got message "message #2" on channel "world"</span>
+</pre></div>
+
+<h2>Stickers</h2>
+
+<p>MPD stickers are a way for you to store arbitrary data in the MPD database,
+associated with particular objects. Note that to enable stickers,
+add <code>sticker_file ~/.mpd/mpd.stickers</code> to your <code>mpd.conf</code> file.</p>
+
+<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">sticker</span><span class="p">(</span><span class="s1">'song'</span><span class="p">,</span> <span class="s1">'iTunes/song1.mp3'</span><span class="p">).</span><span class="nx">set</span><span class="p">({</span>
+      <span class="nx">hello</span><span class="o">:</span> <span class="s1">'world'</span>
+    <span class="p">,</span> <span class="nx">lorem</span><span class="o">:</span> <span class="s1">'ipsum'</span>
+  <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// The sticker method returns a reusable object, taking</span>
+    <span class="c1">// the arguments "type" and "uri".</span>
+    <span class="kd">var</span> <span class="nx">sticker</span> <span class="o">=</span> <span class="nx">client</span><span class="p">.</span><span class="nx">sticker</span><span class="p">(</span><span class="s1">'song'</span><span class="p">,</span> <span class="s1">'iTunes/song1.mp3'</span><span class="p">);</span>
+
+    <span class="nx">sticker</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="c1">// { hello: 'world' }</span>
+    <span class="p">});</span>
+
+    <span class="nx">sticker</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'lorem'</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="c1">// { hello: 'world', lorem: 'ipsum' }</span>
+    <span class="p">});</span>
+
+    <span class="nx">sticker</span><span class="p">.</span><span class="nx">list</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span> <span class="c1">// { hello: 'world', lorem: 'ipsum' }</span>
+    <span class="p">});</span>
+
+    <span class="nx">client</span><span class="p">.</span><span class="nx">sticker</span><span class="p">(</span><span class="s1">'song'</span><span class="p">,</span> <span class="s1">'iTunes'</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">'lorem'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>    <span class="c1">// 'iTunes/song1.mp3'</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">sticker</span><span class="p">);</span> <span class="c1">// { name: 'lorem', value: 'ipsum' }</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">file</span><span class="p">);</span>    <span class="c1">// 'iTunes/song2.mp3'</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">sticker</span><span class="p">);</span> <span class="c1">// { name: 'lorem', value: 'another ipsum' }</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+
+  <span class="nx">client</span><span class="p">.</span><span class="nx">sticker</span><span class="p">(</span><span class="s1">'song'</span><span class="p">,</span> <span class="s1">'iTunes/song2.mp3'</span><span class="p">).</span><span class="nx">set</span><span class="p">({</span>
+    <span class="nx">lorem</span><span class="o">:</span> <span class="s1">'another ipsum'</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>If you're looking to use the command in the same style as above, it's still
+accessible as <code>komponist._sticker()</code>.</p>
+
+<h2>Gotchas</h2>
+
+<p>The following methods are reserved for TCP sockets, and as such have been
+aliased:</p>
+
+<ul>
+<li>
+<code>pause</code> is now <code>client.toggle()</code>
+</li>
+<li>
+<code>kill</code> is now <code>client.killServer()</code>
+</li>
+<li>
+<code>close</code> will close the connection without issuing a command to MPD.</li>
+</ul><p>You can still access them as normal through the <code>command</code> method. If you come
+across any other bugs or inconsistencies, you're more than welcome create an
+issue or a pull request.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/hughsk">hughsk</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-12249588-5");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
