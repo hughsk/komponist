@@ -1,0 +1,24 @@
+{
+  "name": "komponist",
+  "version": "0.0.2",
+  "main": "index.js",
+  "license": "BSD",
+  "description": "A simple, yet flexible, client for MPD, the hackable headless audio playback server.",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hughsk/komponist.git"
+  },
+  "keywords": [
+    "mpd",
+    "music",
+    "audio",
+    "server",
+    "protocol",
+    "komponist"
+  ],
+  "author": {
+    "name": "Hugh Kennedy",
+    "url": "http://hughskennedy.com/",
+    "email": "hughskennedy@gmail.com"
+  }
+}
