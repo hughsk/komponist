@@ -31,7 +31,8 @@
         <h1>komponist</h1>
 
 <p>A simple, yet flexible, Node client library for <a href="http://mpd.wikia.com/">MPD</a>,
-the hackable headless audio playback server.</p>
+the hackable headless audio playback server. As a bonus, it runs the same if
+you use it server-side <em>or</em> on the browser!</p>
 
 <h2>Installation</h2>
 
@@ -51,7 +52,7 @@ commands as callback-style methods. For a full list
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">)</span>
 
-<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">'~/iTunes'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">client</span><span class="p">.</span><span class="nx">play</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">client</span><span class="p">.</span><span class="nx">currentsong</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">info</span><span class="p">)</span> <span class="p">{</span>
@@ -68,7 +69,7 @@ commands as callback-style methods. For a full list
 
 <div class="highlight"><pre><span class="c1">// You can always omit the port/host if you're running</span>
 <span class="c1">// MPD locally and with the default settings.</span>
-<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">'~/iTunes'</span><span class="p">);</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">random</span><span class="p">();</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">play</span><span class="p">();</span>
@@ -77,7 +78,7 @@ commands as callback-style methods. For a full list
 
 <p>There's also a general purpose <code>command</code> method:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// Jump 60 seconds into the 5th track in your playlist:</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">command</span><span class="p">(</span><span class="s1">'seek'</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">60</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// And stop playing when it's done.</span>
@@ -86,11 +87,11 @@ commands as callback-style methods. For a full list
 <span class="p">});</span>
 </pre></div>
 
-<p>The client returned by <code>komponist.connect</code> is just an extended TCP stream, so if you
+<p>The client returned by <code>komponist.createConnection</code> is just an extended TCP stream, so if you
 like you can just pipe data around the Node way:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">)</span>
-  <span class="p">,</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">()</span>
+  <span class="p">,</span> <span class="nx">client</span> <span class="o">=</span> <span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">()</span>
 
 <span class="c1">// Pipe a list of commands to MPD from</span>
 <span class="c1">// a file, piping the raw response out to</span>
@@ -108,7 +109,7 @@ just listen for the "changed" event for MPD updates.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">)</span>
 
-<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">)</span>
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="mi">6600</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">)</span>
    <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'changed'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">system</span><span class="p">)</span> <span class="p">{</span>
      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Subsystem changed: '</span> <span class="o">+</span> <span class="nx">system</span><span class="p">);</span>
    <span class="p">});</span>
@@ -144,7 +145,7 @@ following systems this way:</p>
 clients. Using the <code>publish</code> and <code>subscribe</code> methods, you can send messages
 to other subscribers across the network, e.g. for simple service discovery.</p>
 
-<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">subscriber</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">subscriber</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">subscriber</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">);</span>
   <span class="nx">subscriber</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="s1">'world'</span><span class="p">);</span>
 
@@ -153,7 +154,7 @@ to other subscribers across the network, e.g. for simple service discovery.</p>
   <span class="p">});</span>
 <span class="p">});</span>
 
-<span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">publisher</span><span class="p">)</span> <span class="p">{</span>
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">publisher</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
     <span class="nx">publisher</span><span class="p">.</span><span class="nx">publish</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'message #1'</span><span class="p">);</span>
     <span class="nx">publisher</span><span class="p">.</span><span class="nx">publish</span><span class="p">(</span><span class="s1">'world'</span><span class="p">,</span> <span class="s1">'message #2'</span><span class="p">);</span>
@@ -171,7 +172,7 @@ to other subscribers across the network, e.g. for simple service discovery.</p>
 associated with particular objects. Note that to enable stickers,
 add <code>sticker_file ~/.mpd/mpd.stickers</code> to your <code>mpd.conf</code> file.</p>
 
-<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">client</span><span class="p">.</span><span class="nx">sticker</span><span class="p">(</span><span class="s1">'song'</span><span class="p">,</span> <span class="s1">'iTunes/song1.mp3'</span><span class="p">).</span><span class="nx">set</span><span class="p">({</span>
       <span class="nx">hello</span><span class="o">:</span> <span class="s1">'world'</span>
     <span class="p">,</span> <span class="nx">lorem</span><span class="o">:</span> <span class="s1">'ipsum'</span>
@@ -209,6 +210,36 @@ add <code>sticker_file ~/.mpd/mpd.stickers</code> to your <code>mpd.conf</code> 
 <p>If you're looking to use the command in the same style as above, it's still
 accessible as <code>komponist._sticker()</code>.</p>
 
+<h2>Using Komponist in the Browser</h2>
+
+<p>Thanks to the fact that Komponist connections are streams, you can get the use
+the module just the same on the browser as you would server-side, using
+<a href="https://github.com/substack/">@substack</a>'s <a href="//npmjs.org/package/browserify">browserify</a>
+module.</p>
+
+<div class="highlight"><pre><span class="c1">// On the server:</span>
+<span class="kd">var</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">)</span>
+  <span class="p">,</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">)</span>
+
+<span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="s1">'Hello world.'</span><span class="p">)</span>
+<span class="p">});</span>
+
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="nx">server</span><span class="p">,</span> <span class="s1">'localhost'</span><span class="p">,</span> <span class="mi">6600</span><span class="p">);</span>
+
+<span class="c1">// And on the browser:</span>
+<span class="kd">var</span> <span class="nx">komponist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'komponist'</span><span class="p">);</span>
+
+<span class="nx">komponist</span><span class="p">.</span><span class="nx">createConnection</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">client</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">client</span><span class="p">.</span><span class="nx">status</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Status: '</span><span class="p">,</span> <span class="nx">status</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>There's a full example available in the
+<a href="https://github.com/hughsk/komponist/tree/master/examples/browser">Github repository</a>.</p>
+
 <h2>Gotchas</h2>
 
 <p>The following methods are reserved for TCP sockets, and as such have been
@@ -223,7 +254,9 @@ aliased:</p>
 </li>
 <li>
 <code>close</code> will close the connection without issuing a command to MPD.</li>
-</ul><p>You can still access them as normal through the <code>command</code> method. If you come
+</ul><p>There's no support for <code>command_list_*</code> commands right now.</p>
+
+<p>You can still access them as normal through the <code>command</code> method. If you come
 across any other bugs or inconsistencies, you're more than welcome create an
 issue or a pull request.</p>
       </section>
