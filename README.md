@@ -1,7 +1,8 @@
 # komponist
 
 A simple, yet flexible, Node client library for [MPD](http://mpd.wikia.com/),
-the hackable headless audio playback server.
+the hackable headless audio playback server. As a bonus, it runs the same if
+you use it server-side *or* on the browser!
 
 ## Installation
 
@@ -23,7 +24,7 @@ commands as callback-style methods. For a full list
 ``` javascript
 var komponist = require('komponist')
 
-var client = komponist.connect(6600, 'localhost', function() {
+var client = komponist.createConnection(6600, 'localhost', function() {
   client.add('~/iTunes', function(err) {
     client.play(function(err) {
       client.currentsong(function(err, info) {
@@ -41,7 +42,7 @@ If you prefer to just fire and forget, you can omit the callbacks.
 ``` javascript
 // You can always omit the port/host if you're running
 // MPD locally and with the default settings.
-komponist.connect(function(err, client) {
+komponist.createConnection(function(err, client) {
   client.add('~/iTunes');
   client.random();
   client.play();
@@ -51,7 +52,7 @@ komponist.connect(function(err, client) {
 There's also a general purpose `command` method:
 
 ``` javascript
-var client = komponist.connect(function() {
+var client = komponist.createConnection(function() {
   // Jump 60 seconds into the 5th track in your playlist:
   client.command('seek', [5, 60], function(err) {
     // And stop playing when it's done.
@@ -60,12 +61,12 @@ var client = komponist.connect(function() {
 });
 ```
 
-The client returned by `komponist.connect` is just an extended TCP stream, so if you
+The client returned by `komponist.createConnection` is just an extended TCP stream, so if you
 like you can just pipe data around the Node way:
 
 ``` javascript
 var fs = require('fs')
-  , client = komponist.connect()
+  , client = komponist.createConnection()
 
 // Pipe a list of commands to MPD from
 // a file, piping the raw response out to
@@ -84,7 +85,7 @@ just listen for the "changed" event for MPD updates.
 ``` javascript
 var komponist = require('komponist')
 
-komponist.connect(6600, 'localhost')
+komponist.createConnection(6600, 'localhost')
    .on('changed', function(system) {
      console.log('Subsystem changed: ' + system);
    });
@@ -111,7 +112,7 @@ clients. Using the `publish` and `subscribe` methods, you can send messages
 to other subscribers across the network, e.g. for simple service discovery.
 
 ``` javascript
-komponist.connect(function(err, subscriber) {
+komponist.createConnection(function(err, subscriber) {
   subscriber.subscribe('hello');
   subscriber.subscribe('world');
 
@@ -120,7 +121,7 @@ komponist.connect(function(err, subscriber) {
   });
 });
 
-komponist.connect(function(err, publisher) {
+komponist.createConnection(function(err, publisher) {
   setTimeout(function() {
     publisher.publish('hello', 'message #1');
     publisher.publish('world', 'message #2');
@@ -132,7 +133,6 @@ komponist.connect(function(err, publisher) {
 // Got message "message #2" on channel "world"
 ```
 
-
 ## Stickers
 
 MPD stickers are a way for you to store arbitrary data in the MPD database,
@@ -140,7 +140,7 @@ associated with particular objects. Note that to enable stickers,
 add `sticker_file ~/.mpd/mpd.stickers` to your `mpd.conf` file.
 
 ``` javascript
-komponist.connect(function(err, client) {
+komponist.createConnection(function(err, client) {
   client.sticker('song', 'iTunes/song1.mp3').set({
       hello: 'world'
     , lorem: 'ipsum'
@@ -178,6 +178,37 @@ komponist.connect(function(err, client) {
 If you're looking to use the command in the same style as above, it's still
 accessible as `komponist._sticker()`.
 
+## Using Komponist in the Browser
+
+Thanks to the fact that Komponist connections are streams, you can get the use
+the module just the same on the browser as you would server-side, using
+[@substack](https://github.com/substack/)'s [browserify](//npmjs.org/package/browserify)
+module.
+
+``` javascript
+// On the server:
+var http = require('http')
+  , komponist = require('komponist')
+
+var server = http.createServer(function(req, res) {
+  res.end('Hello world.')
+});
+
+komponist.install(server, 'localhost', 6600);
+
+// And on the browser:
+var komponist = require('komponist');
+
+komponist.createConnection(function(err, client) {
+  client.status(function(err, status) {
+    console.log('Status: ', status);
+  });
+});
+```
+
+There's a full example available in the
+[Github repository](https://github.com/hughsk/komponist/tree/master/examples/browser).
+
 ## Gotchas
 
 The following methods are reserved for TCP sockets, and as such have been
@@ -186,6 +217,8 @@ aliased:
 * `pause` is now `client.toggle()`
 * `kill` is now `client.killServer()`
 * `close` will close the connection without issuing a command to MPD.
+
+There's no support for `command_list_*` commands right now.
 
 You can still access them as normal through the `command` method. If you come
 across any other bugs or inconsistencies, you're more than welcome create an

@@ -1,9 +1,12 @@
 {
   "name": "komponist",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "license": "BSD",
   "description": "A simple, yet flexible, client for MPD, the hackable headless audio playback server.",
+  "scripts": {
+    "make-examples": "node_modules/browserify/bin/cmd.js examples/browser/client.js -o examples/browser/client.build.js"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:hughsk/komponist.git"
@@ -20,5 +23,11 @@
     "name": "Hugh Kennedy",
     "url": "http://hughskennedy.com/",
     "email": "hughskennedy@gmail.com"
+  },
+  "dependencies": {
+    "shoe": "0.0.4"
+  },
+  "devDependencies": {
+    "browserify": "~1.14.5"
   }
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Komponist: Client-Side</title>
+	</head>
+	<style type="text/css">
+		html { margin:0; padding:0; }
+
+		body {
+			padding:40px;
+			font-family:'Helvetica Neue', Helvetica, sans-serif;
+			font-weight:300;
+			color:#999;
+			font-size:14px;
+			line-height:1.5em;
+		}
+
+		#wrap {
+			margin:0 auto;
+			width:400px;
+			text-align:center;
+		}
+
+		h1 {
+			font-size:28px;
+			font-weight:100;
+			color:#555;
+			padding-bottom:0.5em;
+		}
+
+		.button-list {
+			margin:0; padding:0;
+			list-style-type:none;
+		}
+
+		.button {
+			display:inline-block;
+			background:#666;
+			margin:10px;
+			text-align:center;
+			line-height:40px;
+		}
+
+		.button a {
+			display:inline-block;
+			color:#fff;
+			width:100px; height:40px;
+			text-decoration:none;
+		}
+
+		.button:hover {
+			background:#222;
+		}
+	</style>
+	<body>
+		<div id="wrap">
+
+			<h1>Using Komponist on the Browser</h1>
+			<p>This example is as bare as it comes, but it's all you need to use the Komponist module in the browser.</p>
+			<p>First, make sure you're running MPD on <code>localhost:6600</code> - if not, change the last line in <code>server.js</code> to point to MPD and restart this server.</p>
+			<p>Open up your console - the client is available globally under <code>komponist</code>.</p>
+			<p>Feel free to type up some code in the console and play around. If nothing else, here's a quick trick:</p>
+			<ul class="button-list">
+				<li class="button"><a href="javascript:komponist.previous()">&larr; Previous</a></li>
+				<li class="button"><a href="javascript:komponist.toggle()">Play/Pause</a></li>
+				<li class="button"><a href="javascript:komponist.next()">Next &rarr;</a></li>
+			</ul>
+			<p><strong>Now Playing:</strong> <span id="nowplaying"></span></p>
+
+		</div>
+	</body>
+	<script src="/client.build.js"></script>
+	<script type="text/javascript">
+		(function(){
+			var nowplaying = document.getElementById('nowplaying');
+
+			function updatePlayer() {
+				komponist.currentsong(function(err, song) {
+					if (err) return;
+
+					nowplaying.innerHTML = (song.Title + ' / ' + song.Artist)
+						.replace(/>/g, '&gt;')
+						.replace(/</g, '&lt;')
+				});
+			};
+
+			komponist.on('changed', function(system) {
+				if (system !== 'player') return;
+				updatePlayer();
+			});
+			komponist.once('ready', updatePlayer);
+		}());
+	</script>
+</html>
