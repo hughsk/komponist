@@ -28,4 +28,4 @@ server.listen(9000, function() {
 
 // Open up a proxy on the HTTP server that points
 // to MPD (assuming it's accessible at localhost:6600).
-komponist.install(server, 'muse.io', 6600);
+komponist.install(server, 'localhost', 6600);
