@@ -25,7 +25,11 @@ module.exports.createConnection = function(port, host, callback) {
         callback = callback || function(){};
     }
 
-    client.connect(port, host);
+    if(+port != +port) { // port is NaN, i.e. path
+        client.connect(port);
+    } else {
+        client.connect(+port, host);
+    }
     client.once('ready', function() {
         process.nextTick(function(){
             callback(null, client);
