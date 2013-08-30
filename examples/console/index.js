@@ -1,6 +1,6 @@
 var komponist = require('../../index');
 
-var client = komponist.createConnection('/home/bananushka/.mpd/socket',
+var client = komponist.createConnection(process.argv[2], /* path/port */
     function(err, client) {
   if(err) {
     throw err;
