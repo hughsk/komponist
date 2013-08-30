@@ -1,6 +1,6 @@
 {
   "name": "komponist",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "BSD",
   "description": "A simple, yet flexible, client for MPD, the hackable headless audio playback server.",
