@@ -36,6 +36,13 @@ module.exports.createConnection = function(port, host, callback) {
         });
     });
     
+    // Throw error if the connection fails
+    client.on('error', function(){
+	    process.nextTick(function(){
+			callback('connection-error', client); 
+	    });
+    });
+    
     return client;
 };
 
@@ -57,6 +64,11 @@ module.exports.createConnection = MPDClient.prototype.connect ?
 
         client.once('ready', function() {
             callback(null, client);
+        });
+        
+        // Throw error if the connection fails
+        client.on('error', function(){
+	    	callback('connection-error', client); 
         });
 
         return shoe(uri).pipe(client);
